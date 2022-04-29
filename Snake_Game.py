@@ -52,7 +52,7 @@ def right():
     global posicion
     posicion = 'right'
 
-# creamos otro ´puntor para que nos cree las paredes dentro de la pantalla.
+# creamos otro puntor para que nos cree las paredes dentro de la pantalla.
 pared = turtle.Turtle()
 pared.shape('square')
 pared.color('white')
@@ -100,6 +100,14 @@ pared.right(270)
 pared.forward(40)
 pared.ht()
 
+# Creemos el puntero Comida
+manzana = turtle.Turtle()
+manzana.color('red')
+manzana.penup()
+manzana.shape('circle')
+manzana.shapesize(0.7)
+manzana.speed(0)
+tiempo = 0
 
 # Ahora creams nustras funciones de turtle que hacer que cuando se presionen las teclas (arriba, abajo, derecha y izquierda), el valor de posicion
 # cambia segun estas, de tal manera que nuestro puntor piton se movera hacia la direccion que queramos.
@@ -130,4 +138,16 @@ while True:
     # cuando se van acomodando los punteros se hace en un tiempo de turtle por tanto se tendria que esperar alrededor de 10 segundos para poder jugar
     # por tabto, decidi hacerlo de la  anetrior manera, dar con las posiciones de los obstaculos y paredes dibujadas por el puntero pared.
 
-    # juego.delay(30)
+    # Si la piton come entonces crece y la manzana aparece en otro lugar
+    if piton.distance(manzana) <= 20:
+        while True:
+            x =  random.randint(-225, 225)
+            y = random.randint(-225, 225)
+            # con estos dos condicionales nos aseguramos que la las cordenadas de la nueva manzana nunca este sobre las cordenadas de las paredes
+            # y obstaculos, por tanto la piton puede comerselas.
+            if x <= -195 or x >= 190 or y >= 160 or y <= -190:
+                continue
+            if ((x >= -195 and x <= -148) and (y >= -80 and y <= -40)) or ((x >= -115 and x <= -60) and (y >= -75 and y <= -40)) or ((x >= -85 and x <= -45) and (y >= -80 and y <= 30)) or ((x >= 50 and x <= 225) and (y <= -48 and y >= -90)) or ((x >= 50 and x <= 90) and (y <= -48 and y >= -125)) or ((x >= -85 and x <= -45) and (y <= 190 and y >= 70)) or ((x >= 65 and x <= 105) and (y <= 190 and y >= 70)):
+                continue
+            manzana.goto(x, y)
+            break
