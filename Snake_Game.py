@@ -10,12 +10,14 @@ juego.bgcolor('black')
 
 # Creamos a un puntor que sera nuestra serpiente, y definimos sus caracteristicas
 piton = turtle.Turtle()
-piton.color('#009982')
+tamanio_piton = 1
+piton.color('green')
 piton.penup()
-piton.shape('circle')
+piton.shape('square')
 piton.speed(0)
 piton.goto(-150, -140)
 piton.speed(0)
+cuerpo_serpiente = []
 # Creamos una variable que nos indicara la direccion del movimento de la serpiente, en un principio sere stop, no se movera.
 posicion = 'stop'
 
@@ -25,16 +27,16 @@ def movimientos():
     global posicion
     if posicion == 'up':
         y = piton.ycor()
-        piton.sety(y + 2)
+        piton.sety(y + 10)
     elif posicion == 'down':
         y = piton.ycor()
-        piton.sety(y - 2)    
+        piton.sety(y - 10)    
     elif posicion == 'left':
         x = piton.xcor()
-        piton.setx(x - 2)
+        piton.setx(x - 10)
     elif posicion == 'right':
         x = piton.xcor()
-        piton.setx(x + 2)
+        piton.setx(x + 10)
 
 # Ahora generamos nuestras funciones para cambiar el valor de la variable posicion, y con estas fuinciones haremos que cuando se presione unas
 # teclas se llamen esas funciones cambiando el valor de posicion y por tanto, hacer mover a la serpiente segun las teclas
@@ -151,3 +153,20 @@ while True:
                 continue
             manzana.goto(x, y)
             break
+        # creacion de los subcuerpos de la serpiente
+        subcuerpo = piton.clone()
+        subcuerpo.speed(0)
+        subcuerpo.color('light green')
+        cuerpo_serpiente.append(subcuerpo)
+    
+    # este codigo es para que el cuepro del la serpiente tenga movimiento en fila.
+    largo_de_la_serpiente = len(cuerpo_serpiente)
+    for i in range(largo_de_la_serpiente-1, 0, -1):
+        x = cuerpo_serpiente[i-1].xcor()
+        y = cuerpo_serpiente[i-1].ycor()
+        cuerpo_serpiente[i].goto(x,y)
+        
+    if largo_de_la_serpiente > 0:
+        x = piton.xcor()
+        y = piton.ycor()
+        cuerpo_serpiente[0].goto(x,y)
