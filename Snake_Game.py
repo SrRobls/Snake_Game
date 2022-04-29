@@ -15,7 +15,7 @@ piton.penup()
 piton.shape('circle')
 piton.speed(0)
 piton.goto(-150, -140)
-piton.speed(2)
+piton.speed(0)
 # Creamos una variable que nos indicara la direccion del movimento de la serpiente, en un principio sere stop, no se movera.
 posicion = 'stop'
 
@@ -25,16 +25,16 @@ def movimientos():
     global posicion
     if posicion == 'up':
         y = piton.ycor()
-        piton.sety(y + 10)
+        piton.sety(y + 2)
     elif posicion == 'down':
         y = piton.ycor()
-        piton.sety(y - 10)    
+        piton.sety(y - 2)    
     elif posicion == 'left':
         x = piton.xcor()
-        piton.setx(x - 10)
+        piton.setx(x - 2)
     elif posicion == 'right':
         x = piton.xcor()
-        piton.setx(x + 10)
+        piton.setx(x + 2)
 
 # Ahora generamos nuestras funciones para cambiar el valor de la variable posicion, y con estas fuinciones haremos que cuando se presione unas
 # teclas se llamen esas funciones cambiando el valor de posicion y por tanto, hacer mover a la serpiente segun las teclas
@@ -84,11 +84,12 @@ pared.forward(70)
 pared.pendown()
 pared.forward(90)
 pared.right(90)
+
 pared.forward(150)
 pared.right(90)
-pared.forward(80)
+pared.forward(90)
 pared.right(180)
-pared.forward(80)
+pared.forward(90)
 pared.right(90)
 pared.forward(125)
 pared.right(90)
@@ -98,6 +99,7 @@ pared.forward(140)
 pared.right(270)
 pared.forward(40)
 pared.ht()
+
 
 # Ahora creams nustras funciones de turtle que hacer que cuando se presionen las teclas (arriba, abajo, derecha y izquierda), el valor de posicion
 # cambia segun estas, de tal manera que nuestro puntor piton se movera hacia la direccion que queramos.
@@ -112,7 +114,20 @@ while True:
     # dentro de este ciclo estara llamandose la funcion movimiento que hara que se mueva el piton de acuedor a las teclas que presionemos.
     # y es muy importante ir actualizando la pantalla constantemnete ya que asi se actualizaria el nuevo movimiento de la piton y podriamos 
     # visalizar como se mueve.
-
     juego.update()
     movimientos()
-    juego.delay(30)
+
+    # cuando nuestra serpiente toca algunas de las paredes, entonces muere
+    if piton.xcor() <= -195 or piton.xcor() >= 190 or piton.ycor() >= 160 or piton.ycor() <= -190:
+        time.sleep(0.5)
+        piton.goto(-150, -140)
+    # cuando la serpiente toque los obstaculos entonces muere, este condicional es largo ya que tuve que dar con la posicion de cada uno de los obstaculos.
+    if ((piton.xcor() >= -195 and piton.xcor() <= -148) and (piton.ycor() >= -80 and piton.ycor() <= -40)) or ((piton.xcor() >= -115 and piton.xcor() <= -60) and (piton.ycor() >= -75 and piton.ycor() <= -40)) or ((piton.xcor() >= -85 and piton.xcor() <= -45) and (piton.ycor() >= -80 and piton.ycor() <= 30)) or ((piton.xcor() >= 50 and piton.xcor() <= 225) and (piton.ycor() <= -48 and piton.ycor() >= -90)) or ((piton.xcor() >= 50 and piton.xcor() <= 90) and (piton.ycor() <= -48 and piton.ycor() >= -125)) or ((piton.xcor() >= -85 and piton.xcor() <= -45) and (piton.ycor() <= 190 and piton.ycor() >= 70)) or ((piton.xcor() >= 65 and piton.xcor() <= 105) and (piton.ycor() <= 190 and piton.ycor() >= 70)):
+        time.sleep(0.5)
+        piton.goto(-150, -140)
+    # Otra forma de colocar las paredes y los obstaculos era ir creando otros punteros de tal forma que se genere la forma de los obstaculo y partes
+    # propuestas y cuando nustra oiton toque a cualquier de esos punteros entonces muere, el proble con este metodo (al menos a mi me pasa) es que
+    # cuando se van acomodando los punteros se hace en un tiempo de turtle por tanto se tendria que esperar alrededor de 10 segundos para poder jugar
+    # por tabto, decidi hacerlo de la  anetrior manera, dar con las posiciones de los obstaculos y paredes dibujadas por el puntero pared.
+
+    # juego.delay(30)
