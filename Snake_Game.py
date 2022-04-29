@@ -10,14 +10,18 @@ juego.bgcolor('black')
 
 # Creamos a un puntor que sera nuestra serpiente, y definimos sus caracteristicas
 piton = turtle.Turtle()
-tamanio_piton = 1
 piton.color('green')
 piton.penup()
 piton.shape('square')
 piton.speed(0)
 piton.goto(-150, -140)
-piton.speed(0)
+velocidad = 1
+piton.speed(velocidad)
+# Creamos una lista donde iran los subcuerpos de la serpiente (que tambien son nodos), para que estas se sigan las unas con las otras
+# es decir, si tenemos una serie de tres subcuerpos, entonces el subcuerpo 3 seguira al subcuerpo 2, el subcuerpo 2 al subcuerpo 1,el subcuerpo 1
+# al subvcuerpo 0 y el subuecuerpo 0 al la cabeza de la serpiente, (note, que estamos tratanto a los subcuerpos como si fueran los indices en una lista)
 cuerpo_serpiente = []
+largo_de_la_serpiente = 0
 # Creamos una variable que nos indicara la direccion del movimento de la serpiente, en un principio sere stop, no se movera.
 posicion = 'stop'
 
@@ -63,6 +67,7 @@ pared.penup()
 pared.speed(0)
 pared.goto(-215, 180)
 pared.pensize(20)
+# Creacion de las paredes y obstaculos
 pared.pendown()
 for i in range(1, 5):
     if i % 2 != 0:
@@ -109,7 +114,7 @@ manzana.penup()
 manzana.shape('circle')
 manzana.shapesize(0.7)
 manzana.speed(0)
-tiempo = 0
+tiempo = 1
 
 # Ahora creams nustras funciones de turtle que hacer que cuando se presionen las teclas (arriba, abajo, derecha y izquierda), el valor de posicion
 # cambia segun estas, de tal manera que nuestro puntor piton se movera hacia la direccion que queramos.
@@ -119,6 +124,19 @@ turtle.onkeypress(down, 'Down')
 turtle.onkeypress(left, 'Left')
 turtle.onkeypress(right, 'Right')
 
+def muerte_serpiente():
+    global cuerpo_serpiente, piton, largo_de_la_serpiente, velocidad
+    for i in range(largo_de_la_serpiente):
+        cuerpo_serpiente[i].ht()
+        cuerpo_serpiente[i].clear()
+    cuerpo_serpiente = []
+    velocidad = 1
+    piton.speed(0)
+    piton.shapesize(1)
+    piton.goto(-150, -140)
+    piton.speed(velocidad)
+    
+
 # Creamos el ciclo infinito principal donde correra el juego.
 while True:
     # dentro de este ciclo estara llamandose la funcion movimiento que hara que se mueva el piton de acuedor a las teclas que presionemos.
@@ -127,18 +145,26 @@ while True:
     juego.update()
     movimientos()
 
-    # cuando nuestra serpiente toca algunas de las paredes, entonces muere
+    # cuando nuestra serpiente toca algunas de las paredes, entonces muere y se reinicia la serpiente
     if piton.xcor() <= -195 or piton.xcor() >= 190 or piton.ycor() >= 160 or piton.ycor() <= -190:
         time.sleep(0.5)
-        piton.goto(-150, -140)
+        muerte_serpiente()
+        largo_de_la_serpiente = 0
     # cuando la serpiente toque los obstaculos entonces muere, este condicional es largo ya que tuve que dar con la posicion de cada uno de los obstaculos.
     if ((piton.xcor() >= -195 and piton.xcor() <= -148) and (piton.ycor() >= -80 and piton.ycor() <= -40)) or ((piton.xcor() >= -115 and piton.xcor() <= -60) and (piton.ycor() >= -75 and piton.ycor() <= -40)) or ((piton.xcor() >= -85 and piton.xcor() <= -45) and (piton.ycor() >= -80 and piton.ycor() <= 30)) or ((piton.xcor() >= 50 and piton.xcor() <= 225) and (piton.ycor() <= -48 and piton.ycor() >= -90)) or ((piton.xcor() >= 50 and piton.xcor() <= 90) and (piton.ycor() <= -48 and piton.ycor() >= -125)) or ((piton.xcor() >= -85 and piton.xcor() <= -45) and (piton.ycor() <= 190 and piton.ycor() >= 70)) or ((piton.xcor() >= 65 and piton.xcor() <= 105) and (piton.ycor() <= 190 and piton.ycor() >= 70)):
         time.sleep(0.5)
-        piton.goto(-150, -140)
+        muerte_serpiente()
+        largo_de_la_serpiente = 0
     # Otra forma de colocar las paredes y los obstaculos era ir creando otros punteros de tal forma que se genere la forma de los obstaculo y partes
     # propuestas y cuando nustra oiton toque a cualquier de esos punteros entonces muere, el proble con este metodo (al menos a mi me pasa) es que
     # cuando se van acomodando los punteros se hace en un tiempo de turtle por tanto se tendria que esperar alrededor de 10 segundos para poder jugar
     # por tabto, decidi hacerlo de la  anetrior manera, dar con las posiciones de los obstaculos y paredes dibujadas por el puntero pared.
+
+    # si la serpiente toca su propio cuerpo entonces muere.
+    if any(piton.distance(cuerpo_serpiente[i]) < 10 for i in range(largo_de_la_serpiente)):
+        time.sleep(0.5)
+        muerte_serpiente()
+        largo_de_la_serpiente = 0
 
     # Si la piton come entonces crece y la manzana aparece en otro lugar
     if piton.distance(manzana) <= 20:
@@ -153,11 +179,31 @@ while True:
                 continue
             manzana.goto(x, y)
             break
+
         # creacion de los subcuerpos de la serpiente
         subcuerpo = piton.clone()
         subcuerpo.speed(0)
         subcuerpo.color('light green')
         cuerpo_serpiente.append(subcuerpo)
+
+        # A medida que la serpiente come se le aumenta la velocidad, esto lo hago ya que por como trabaja el modulo turtle, a medida que la piton come
+        # se esta haciendo mas lento ya que se gasta segundos en el movimiento de los subcuerpo, entonces para mejorar esto, aumentamos la velocidad a media
+        # que el piton come.
+        if largo_de_la_serpiente > 0:
+            velocidad += 1
+            piton.speed(velocidad)
+
+        # tambien cuando la serpiente come 5 manzanas entonces este crece y cuando come 10 este vuelve a crecer, ya que para simular la lentitud
+        # de la serpiente a medida que come, entonces la hacemos mas y mas gorda. creando asi un lenguaje visual del porque esta siendo cada vez mas
+        # lenta
+        if largo_de_la_serpiente+1 == 5:
+            piton.shapesize(1.5)
+            for i in range(largo_de_la_serpiente+1):
+                cuerpo_serpiente[i].shapesize(1.5)
+        if largo_de_la_serpiente+1 == 10:
+            piton.shapesize(2)
+            for i in range(largo_de_la_serpiente+1):
+                cuerpo_serpiente[i].shapesize(2)
     
     # este codigo es para que el cuepro del la serpiente tenga movimiento en fila.
     largo_de_la_serpiente = len(cuerpo_serpiente)
@@ -165,8 +211,10 @@ while True:
         x = cuerpo_serpiente[i-1].xcor()
         y = cuerpo_serpiente[i-1].ycor()
         cuerpo_serpiente[i].goto(x,y)
-        
+    
+    # aca hacemos que el subcuerpo del indice 0 siga a la cabeza, pues el subcuerpo 0 no tiene un subcuerpo anterior a el. 
     if largo_de_la_serpiente > 0:
         x = piton.xcor()
         y = piton.ycor()
         cuerpo_serpiente[0].goto(x,y)
+    
